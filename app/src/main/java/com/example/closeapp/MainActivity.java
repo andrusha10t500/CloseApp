@@ -17,10 +17,14 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.acl.AclNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +33,6 @@ public class MainActivity extends ListActivity {
     private PackageManager packageManager = null;
     private List applist = null;
     private AppAdapter listadapter = null;
-    CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,7 @@ public class MainActivity extends ListActivity {
 
         packageManager = getPackageManager();
 
-        checkBox = findViewById(R.id.checkbox1);
+//        checkBox = findViewById(R.id.checkbox1);
 
         new LoadApplications().execute();
     }
@@ -48,32 +51,26 @@ public class MainActivity extends ListActivity {
         super.onListItemClick(l, v, position, id);
 
         ApplicationInfo app = (ApplicationInfo)applist.get(position);
-//        if(checkBox.isChecked()) {
-//            checkBox.setChecked(false);
-//        } else {
-//            checkBox.setChecked(true);
-//
-//            try {
-//                InsertPackageNameIntoFile(app.name);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                Toast.makeText(getApplicationContext(),"Ошибка ввода/вывода", Toast.LENGTH_LONG).show();
-//            }
-//        }
 
+        Toast.makeText(getApplicationContext(),packageManager.getNameForUid(app.uid),Toast.LENGTH_LONG).show();
 
-//      Запуск приложения по нажатию - не нужно
         try {
-            Intent intent = packageManager.getLaunchIntentForPackage(app.packageName);
-
-            if (intent != null) {
-                startActivity(intent);
-            }
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(getApplicationContext(),e.getMessage(), Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
+            InsertPackageNameIntoFile(packageManager.getNameForUid(app.uid));
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+//        try{
+//            Intent intent = packageManager.getLaunchIntentForPackage(app.packageName);
+//
+//            if(intent != null) {
+//                startActivity(intent);
+//            }
+//        } catch(ActivityNotFoundException e) {
+//            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//        } catch(Exception e) {
+//            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//        }
     }
 
     private List checkForLaunchIntent(List<ApplicationInfo> list) {
@@ -93,19 +90,29 @@ public class MainActivity extends ListActivity {
         return appList;
     }
 
-    private boolean InsertPackageNameIntoFile(String PackageName) throws IOException {
-        File f = new File(Environment.getExternalStorageState() + "/file");
-        if(f.exists()) {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-            bw.write(PackageName);
+    private void InsertPackageNameIntoFile(String PackageName) throws IOException {
+        File f1 = new File(Environment.getExternalStorageDirectory() + "/file");
+        if(f1.exists()) {
+            BufferedReader br = new BufferedReader(new FileReader(f1.getAbsoluteFile()));
+            String string = br.readLine();
+            StringBuilder result = new StringBuilder();
+            while (string != null) {
+                result.append(string).append("\n");
+                string = br.readLine();
+            }
+            br.close();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f1));
+            result.append(PackageName).append("\n");
+            bw.append(result);
+
             bw.close();
             Toast.makeText(getApplicationContext(),"Запись добавлена в файл: " +
-                    Environment.getExternalStorageState() + "/file",Toast.LENGTH_LONG).show();
-            return true;
+                    Environment.getExternalStorageState() + "/file",Toast.LENGTH_SHORT).show();
         } else {
+            FileOutputStream f = new FileOutputStream(Environment.getExternalStorageDirectory() + "/file");
+            f.close();
             Toast.makeText(getApplicationContext(),"Файл не создан : " +
-                    Environment.getExternalStorageState() + "/file",Toast.LENGTH_LONG).show();
-            return false;
+                    Environment.getExternalStorageState() + "/file",Toast.LENGTH_SHORT).show();
         }
     }
 

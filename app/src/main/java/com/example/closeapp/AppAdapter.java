@@ -3,20 +3,25 @@ package com.example.closeapp;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.List;
+import java.util.Scanner;
 
 public class AppAdapter extends ArrayAdapter {
     private List<ApplicationInfo> appList = null;
     private Context context;
     private PackageManager packageManager = null;
     private long cacheSize, dataSize, apkSize, size;
+
 //    private PackageStats packageStats = null;
 
 
@@ -78,22 +83,44 @@ public class AppAdapter extends ArrayAdapter {
 //            }
 //        }
 
-
         if(null != data) {
             TextView appName = view.findViewById(R.id.app_name);
             TextView packageName = view.findViewById(R.id.app_package);
-            TextView memory = view.findViewById(R.id.memory);
+//            TextView memory = view.findViewById(R.id.memory);
             ImageView iconView = view.findViewById(R.id.app_icon);
+//            CheckBox checkBox = view.findViewById(R.id.checkbox1);
 
 
             appName.setText(data.loadLabel(packageManager));
             packageName.setText(data.packageName);
+//            checkBox.setChecked(CheckCheckBox(data.packageName));
 //            memory.setText(Long.toString(packageStats.cacheSize));
-            memory.setText(Long.toString(cacheSize));
+//            memory.setText(Long.toString(cacheSize));
             iconView.setImageDrawable(data.loadIcon(packageManager));
         }
 
         return view;
+    }
+    public boolean CheckCheckBox(String packageName){
+        //Проверить в файле есть ли такое название приложения??
+        File f = new File(Environment.getExternalStorageState() + "/file");
+        try (Scanner scanner = new Scanner(f)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] cols = line.split(" ");
+                if(cols[0].equals(packageName)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return false;
     }
 
 }
