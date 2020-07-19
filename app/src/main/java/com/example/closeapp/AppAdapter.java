@@ -13,10 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Scanner;
 
-public class AppAdapter extends ArrayAdapter {
+public class AppAdapter extends ArrayAdapter implements Serializable {
     private List<ApplicationInfo> appList = null;
     private Context context;
     private PackageManager packageManager = null;

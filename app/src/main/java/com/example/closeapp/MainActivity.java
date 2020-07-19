@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -148,6 +149,20 @@ public class MainActivity extends ListActivity {
                 Environment.getExternalStorageState() + "/file",Toast.LENGTH_SHORT).show();
     }
 
+    public void Click_button(View view) {
+        Toast.makeText(getApplicationContext(), "вошёл", Toast.LENGTH_LONG).show();
+        try {
+            Process p = Runtime.getRuntime().exec("su\n");
+            DataOutputStream os = new DataOutputStream(p.getOutputStream());
+            os.writeBytes("closeapp " + Environment.getExternalStorageDirectory() + "/file\n");
+            os.writeBytes("exit\n");
+            os.flush();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "не вышло: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
     private class LoadApplications extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog progress = null;
@@ -157,7 +172,7 @@ public class MainActivity extends ListActivity {
 
             applist = checkForLaunchIntent(packageManager.getInstalledApplications(PackageManager.GET_META_DATA));
 
-            listadapter = new AppAdapter(MainActivity.this, R.layout.list_item, applist);
+            listadapter = new AppAdapter(MainActivity.this, android.R.layout.simple_list_item_checked, applist);
 
             return null;
         }
