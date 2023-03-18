@@ -9,6 +9,7 @@ import android.app.Application;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -17,7 +18,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -37,6 +40,7 @@ public class MainActivity extends ListActivity {
     private PackageManager packageManager = null;
     private List applist = null;
     private AppAdapter listadapter = null;
+    private CheckBox checkBox = null;
     int REQUEST_CODE_PERMISSION, package_uid;
 
     @Override
@@ -46,7 +50,7 @@ public class MainActivity extends ListActivity {
 
         packageManager = getPackageManager();
 
-//        checkBox = findViewById(R.id.checkbox1);
+        checkBox = findViewById(R.id.checkbox1);
 
         new LoadApplications().execute();
     }
@@ -123,8 +127,8 @@ public class MainActivity extends ListActivity {
         return appList;
     }
 
-    private void InsertPackageNameIntoFile(String PackageName) throws IOException {
-        File f1 = new File(Environment.getExternalStorageDirectory() + "/file");
+    public void InsertPackageNameIntoFile(String PackageName) throws IOException {
+        File f1 = new File(Environment.getExternalStorageDirectory(), "file");
         if(!f1.exists()) {
             FileOutputStream f = new FileOutputStream(Environment.getExternalStorageDirectory() + "/file");
             f.close();
@@ -132,7 +136,7 @@ public class MainActivity extends ListActivity {
                     Environment.getExternalStorageState() + "/file",Toast.LENGTH_SHORT).show();
         }
 
-        BufferedReader br = new BufferedReader(new FileReader(f1.getAbsoluteFile()));
+        BufferedReader br = new BufferedReader(new FileReader(f1));
         String string = br.readLine();
         StringBuilder result = new StringBuilder();
         while (string != null) {
