@@ -117,6 +117,7 @@ public class AppAdapter extends ArrayAdapter implements Serializable {
 
         return view;
     }
+
     public boolean CheckCheckBox(String packageName) throws FileNotFoundException {
         //Проверить в файле есть ли такое название приложения??
         File f = new File(Environment.getExternalStorageDirectory() + "/file");
